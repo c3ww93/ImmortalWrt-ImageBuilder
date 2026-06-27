@@ -134,6 +134,16 @@ uci delete ttyd.@ttyd[0].interface
 uci set dropbear.@dropbear[0].Interface=''
 uci commit
 
+# 设置自定义主机名（仅在当前主机名为默认值时才设置，避免覆盖用户已自定义的主机名）
+current_hostname=$(uci get system.@system[0].hostname 2>/dev/null)
+case "$current_hostname" in
+    "ImmortalWrt"|"LibWrt"|"")
+        uci set system.@system[0].hostname='iStoerOS'
+        uci commit system
+        /etc/init.d/system reload
+        ;;
+esac
+
 # 设置编译作者信息
 FILE_PATH="/etc/openwrt_release"
 NEW_DESCRIPTION="Packaged by wukongdaily"
